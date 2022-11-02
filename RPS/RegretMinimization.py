@@ -1,9 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 
-ROCK = 0
-PAPER = 1
-SCISSORS = 2
+ROCK, PAPER, SCISSORS = 0, 1, 2
 NUM_ACTIONS = 3
 
 regretSum = [0.0] * NUM_ACTIONS
@@ -43,7 +41,7 @@ def train(iterations):
     actionUtility = [0.0] * NUM_ACTIONS
     for i in range(iterations):
         # get regret-matched mixed-strategy actions
-        stragtegy = getStrategy()
+        strategy = getStrategy()
         myAction = getAction(strategy)
         otherAction = getAction(oppStrategy)
         
