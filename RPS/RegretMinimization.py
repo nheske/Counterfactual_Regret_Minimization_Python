@@ -46,14 +46,21 @@ def train(iterations):
         otherAction = getAction(oppStrategy)
         
         # compute action utilities
+
+        #performance of matching action is 0
         actionUtility[otherAction] = 0
-        if otherAction == NUM_ACTIONS - 1:
-            actionUtility[0] = 1
+
+        # if other chose scissors, rock gets a 1 for winning
+        if otherAction == SCISSORS:
+            actionUtility[ROCK] = 1
         else:
+            # else if other chose rock, paper gets a 1 and if other chose paper then scissors gets a 1
             actionUtility[otherAction + 1] = 1
-        if otherAction == 0:
+        if otherAction == ROCK:
+            # else if other chose rock, scissors gets a -1 for losing
             actionUtility[NUM_ACTIONS - 1] = -1
         else:
+            # else if other chose scissor, paper gets a -1 and if other chose scissors then paper gets a -1 for losing
             actionUtility[otherAction - 1] = -1
             
         # accumulate action regrets
