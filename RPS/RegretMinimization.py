@@ -9,6 +9,7 @@ strategy = [0.0] * NUM_ACTIONS
 strategySum = [0.0] * NUM_ACTIONS
 # strategySum = [0.0, 0.0, 0.0]
 oppStrategy = [0.4, 0.3, 0.3]
+#oppStrategy = [0.3, 0.45, 0.25]
 
 def getStrategy():
     normalizingSum = 0.0
