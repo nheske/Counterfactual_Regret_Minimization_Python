@@ -94,6 +94,17 @@ def train(num_iterations, regretSum, oppStrategy):
             
     return strategySum
 
+opponentStrategy = [0.0, 0.0, 1.0]
+max_value = max(opponentStrategy)
+max_index = opponentStrategy.index(max_value)
+print("opponent prefers "+ACTIONS[max_index])
+opponent_exploit = getAvgStrategy(100,opponentStrategy)
+max_value = max(opponent_exploit)
+max_index = opponent_exploit.index(max_value)
+print("prefer "+ACTIONS[max_index])
+print("Exploit opponent Strategy: ", opponent_exploit)
+
+
 def train2Player(iterations,regretSum1,regretSum2,p2Strat):
     #Adapt Train Function for two players
     actions = 3
@@ -151,12 +162,7 @@ def avgStrategyNoHuman(iterations,oppStrat):
 # randomStrategy = [.6,.2,.2]
 # print("Opponent Strategy: ",randomStrategy)
 # print("Exploitative Strategy: ", getAvgStrategy(100000,randomStrategy))
-rockStrategy = [1.0, 0.0, 0.0]
-rock_exploit = getAvgStrategy(1000,rockStrategy)
-max_value = max(rock_exploit)
-max_index = rock_exploit.index(max_value)
-print("prefer "+ACTIONS[max_index])
-print("Exploit Rock Strategy: ", rock_exploit)
+
 # holders = avgStrategyNoHuman(100000,[.6,.2,.2])
 # print("Opponents equilibrium strategy: ", holders[0])
 # print("Players equilibrium strategy: ", holders[1])
