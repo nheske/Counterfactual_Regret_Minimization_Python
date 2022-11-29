@@ -84,8 +84,8 @@ class RPSGameSelfPlayEngine:
     mystrategy = self.me.strategy
     opponentStrategy = self.opponent.strategy
 
-    print("intitial mystrategy      : ", mystrategy)
-    print("intitial opponentStrategy: ", opponentStrategy)
+    print("initial mystrategy      : ", mystrategy)
+    print("initial opponentStrategy: ", opponentStrategy)
     print()
 
     for k  in range(iterations):
@@ -151,3 +151,19 @@ print("\nI DRAW when:")
 print("I play R vs R", engine2.getActionResult(0, 0))
 print("I play P vs P", engine2.getActionResult(1, 1))
 print("I play S vs S", engine2.getActionResult(2, 2))
+
+engine = RPSGameSelfPlayEngine([.5,.3,.2], [.1,.8,.1])
+print('Training:')
+engine.train(10000)
+
+print('My adjusted strategy      : ',engine.me.getAverageStrategy())
+print('Opponent adjusted Strategy: ', engine.opponent.getAverageStrategy())
+
+
+print()
+print('Playing using trained strategies:')
+w, d, l = engine.play(1000)
+
+print('win : ',w)
+print('draw: ',d)
+print('loss: ',l)
