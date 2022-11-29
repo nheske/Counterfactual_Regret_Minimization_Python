@@ -10,6 +10,8 @@ This repository contains the example code of regret minimiaztion solving Rock-Pa
     * Finding RPS Equilibrium
 * Kuhn poker
     * Self training
+* Tic-Tac-Toe
+    * based on https://towardsdatascience.com/counterfactual-regret-minimization-ff4204bf4205
 * Swindler - Is there an optimal strategy for this 
     * https://gamedev.stackexchange.com/questions/202999/1v1-bartering-brain-game-see-any-problems/203018?noredirect=1#comment369702_203018
     * https://news.ycombinator.com/item?id=33395476
