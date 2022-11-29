@@ -1,10 +1,3 @@
-"""
-https://github.com/NikhilTRamesh/CFR-RockPaperScissors/blob/main/RPSTrainer.py
-RPS Trainer that utilizes standard Counterfactual Regret Minimization
-to generate a Nash Equilibrium that represents the GTO probability
-distribution for a game of Rock Paper Scissors.
-"""
-
 import random
 ROCK, PAPER, SCISSORS = 0, 1, 2
 ACTIONS = ["ROCK", "PAPER", "SCISSORS"]
@@ -13,22 +6,18 @@ def getStrategy(regretSum,strategySum):
     num_actions = 3
     normalization = 0
     strategy = [0,0,0]
-
     for i in range(0,num_actions):
         if regretSum[i] > 0:
             strategy[i] = regretSum[i]
         else:
             strategy[i] = 0
-
         normalization += strategy[i]
-
     for i in range(0,num_actions):
         if normalization > 0:
             strategy[i] = strategy[i] / normalization
         else:
             strategy[i] = 1.0/num_actions
         strategySum[i] += strategy[i]
-
     return (strategy,strategySum)
 
 def getAction(strategy):
@@ -37,7 +26,6 @@ def getAction(strategy):
     rockcutoff = strategy[ROCK]
     papercutoff = strategy[PAPER]
     cutoffscissors = strategy[SCISSORS]
-    
     if r >= 0 and r < rockcutoff:
         return ROCK
     elif r >= rockcutoff and r < (rockcutoff + papercutoff):
@@ -61,44 +49,42 @@ def getAvgStrategy(num_iterations, oppStrategy):
         avgStrategy[ROCK] = avgStrategy[PAPER] = avgStrategy[S] = 1.0/NUM_ACTIONS
     return avgStrategy
 
-def train(num_iterations, regretSum, oppStrategy):
-    actionMatrix = [0,0,0]
+def train(num_iterations, regretSum, villainStrategy):
+    action_utilities = [0,0,0]
     strategySum = [0,0,0]
     actions = 3
-
     for i in range(0,num_iterations):
-        temp = getStrategy(regretSum,strategySum)
-        strategy = temp[0]
-        strategySum = temp[1]
-        #obtain our action from the calculated strategy distribution
-        playeraction = getAction(strategy)
+        preferences = getStrategy(regretSum,strategySum)
+        heroStrategy = preferences[0]
+        strategySum = preferences[1]
+        # get hero action based on strategic preference and some randomness
+        playeraction = getAction(heroStrategy)
         #obtain opponents action from the calculated strategy distribution
-        opponent_action = getAction(oppStrategy)
-
+        opponent_action = getAction(villainStrategy)
+# update utilities...did the action win?
         if opponent_action == ROCK:
-            actionMatrix[ROCK] = 0      # neutral
-            actionMatrix[PAPER] = 1     # incentivize paper
-            actionMatrix[SCISSORS] = -1 # punish scissors
+            action_utilities[ROCK] = 0      # neutral
+            action_utilities[PAPER] = 1     # incentivize paper
+            action_utilities[SCISSORS] = -1 # punish scissors
         elif opponent_action == PAPER:
-            actionMatrix[ROCK] = -1     # punish rock
-            actionMatrix[PAPER] = 0     # neutral
-            actionMatrix[SCISSORS] = 1  # incentivize scissor
+            action_utilities[ROCK] = -1     # punish rock
+            action_utilities[PAPER] = 0     # neutral
+            action_utilities[SCISSORS] = 1  # incentivize scissor
         #opponent plays scissors
         else:
-            actionMatrix[ROCK] = 1      # incentivize rock
-            actionMatrix[PAPER] = -1    # punish paper
-            actionMatrix[SCISSORS] = 0  # neutral
-
+            action_utilities[ROCK] = 1      # incentivize rock
+            action_utilities[PAPER] = -1    # punish paper
+            action_utilities[SCISSORS] = 0  # neutral
+# update regrets...how did the utility compare to prior regret sum?
         for i in range(0,actions):
-            regretSum[i] += actionMatrix[i] - actionMatrix[playeraction]
-            
+            regretSum[i] += action_utilities[i] - action_utilities[playeraction]
     return strategySum
 
 opponentStrategy = [0.0, 0.0, 1.0]
 max_value = max(opponentStrategy)
 max_index = opponentStrategy.index(max_value)
 print("opponent prefers "+ACTIONS[max_index])
-opponent_exploit = getAvgStrategy(100,opponentStrategy)
+opponent_exploit = getAvgStrategy(10,opponentStrategy)
 max_value = max(opponent_exploit)
 max_index = opponent_exploit.index(max_value)
 print("prefer "+ACTIONS[max_index])
