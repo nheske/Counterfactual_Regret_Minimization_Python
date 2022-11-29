@@ -7,13 +7,14 @@ distribution for a game of Rock Paper Scissors.
 
 import random
 ROCK, PAPER, SCISSORS = 0, 1, 2
+ACTIONS = ["ROCK", "PAPER", "SCISSORS"]
 
 def getStrategy(regretSum,strategySum):
-    actions = 3
+    num_actions = 3
     normalization = 0
     strategy = [0,0,0]
 
-    for i in range(0,actions):
+    for i in range(0,num_actions):
         if regretSum[i] > 0:
             strategy[i] = regretSum[i]
         else:
@@ -21,11 +22,11 @@ def getStrategy(regretSum,strategySum):
 
         normalization += strategy[i]
 
-    for i in range(0,actions):
+    for i in range(0,num_actions):
         if normalization > 0:
             strategy[i] = strategy[i] / normalization
         else:
-            strategy[i] = 1.0/actions
+            strategy[i] = 1.0/num_actions
         strategySum[i] += strategy[i]
 
     return (strategy,strategySum)
@@ -46,49 +47,47 @@ def getAction(strategy):
     else:
         return ROCK
 
-def getAvgStrategy(numiter, oppStrategy):
+def getAvgStrategy(num_iterations, oppStrategy):
     NUM_ACTIONS = 3
-    strategySum = train(numiter,[0,0,0],oppStrategy)
+    strategySum = train(num_iterations,[0,0,0],oppStrategy)
     avgStrategy = [0,0,0]
     normalization = 0
     normalization = strategySum[0] + strategySum[1] + strategySum[2]
     if normalization>0: # we have a preference
-        avgStrategy[0] = strategySum[0] / normalization
-        avgStrategy[1] = strategySum[1] / normalization
-        avgStrategy[2] = strategySum[2] / normalization
+        avgStrategy[ROCK] = strategySum[ROCK] / normalization
+        avgStrategy[PAPER] = strategySum[PAPER] / normalization
+        avgStrategy[SCISSORS] = strategySum[SCISSORS] / normalization
     else:
-        avgStrategy[0] = avgStrategy[1] = avgStrategy[2] = 1.0/NUM_ACTIONS
+        avgStrategy[ROCK] = avgStrategy[PAPER] = avgStrategy[S] = 1.0/NUM_ACTIONS
     return avgStrategy
 
-def train(numiter, regretSum, oppStrategy):
+def train(num_iterations, regretSum, oppStrategy):
     actionMatrix = [0,0,0]
     strategySum = [0,0,0]
     actions = 3
 
-    for i in range(0,numiter):
+    for i in range(0,num_iterations):
         temp = getStrategy(regretSum,strategySum)
         strategy = temp[0]
         strategySum = temp[1]
         #obtain our action from the calculated strategy distribution
         playeraction = getAction(strategy)
         #obtain opponents action from the calculated strategy distribution
-        oppaction = getAction(oppStrategy)
+        opponent_action = getAction(oppStrategy)
 
-        #opponent plays rock
-        if oppaction == 0:
-            actionMatrix[0] = 0  #regret of 0 for draw with rock
-            actionMatrix[1] = -1 #regret of -1 for loss with scissros
-            actionMatrix[2] = 1  #regret of +1 for win with paper
+        if opponent_action == ROCK:
+            actionMatrix[ROCK] = 0      # neutral
+            actionMatrix[PAPER] = 1     # incentivize paper
+            actionMatrix[SCISSORS] = -1 # punish scissors
+        elif opponent_action == PAPER:
+            actionMatrix[ROCK] = -1     # punish rock
+            actionMatrix[PAPER] = 0     # neutral
+            actionMatrix[SCISSORS] = 1  # incentivize scissor
         #opponent plays scissors
-        elif oppaction == 1:
-            actionMatrix[0] = 1  #regret of -1 for win with rock
-            actionMatrix[1] = 0  #regret of 0 for draw with scissors
-            actionMatrix[2] = -1 #regret of +1 for loss with paper
-        #opponent plays paper
         else:
-            actionMatrix[0] = -1 #regret of -1 for loss with rock
-            actionMatrix[1] = 1  #regret of +1 for win with scissors
-            actionMatrix[2] = 0  #regret of 0 for draw with paper
+            actionMatrix[ROCK] = 1      # incentivize rock
+            actionMatrix[PAPER] = -1    # punish paper
+            actionMatrix[SCISSORS] = 0  # neutral
 
         for i in range(0,actions):
             regretSum[i] += actionMatrix[i] - actionMatrix[playeraction]
@@ -124,7 +123,7 @@ def train2Player(iterations,regretSum1,regretSum2,p2Strat):
             actionUtility[actions - 1] = -1
             #Utility(Paper) = 1
             actionUtility[1] = 1
-        #Opopnent Chooses Paper
+        #Opponent Chooses Paper
         else:
             #Utility(Rock) = -1
             actionUtility[0] = -1
@@ -149,9 +148,15 @@ def avgStrategyNoHuman(iterations,oppStrat):
             strats[1][i] = strats[1][i]/s2
     return strats
     
-randomStrategy = [.6,.2,.2]
-print("Opponent Strategy: ",randomStrategy)
-print("Exploitative Strategy: ", getAvgStrategy(100000,randomStrategy))
-holders = avgStrategyNoHuman(100000,[.6,.2,.2])
-print("Opponents equilibrium strategy: ", holders[0])
-print("Players equilibrium strategy: ", holders[1])
+# randomStrategy = [.6,.2,.2]
+# print("Opponent Strategy: ",randomStrategy)
+# print("Exploitative Strategy: ", getAvgStrategy(100000,randomStrategy))
+rockStrategy = [1.0, 0.0, 0.0]
+rock_exploit = getAvgStrategy(1000,rockStrategy)
+max_value = max(rock_exploit)
+max_index = rock_exploit.index(max_value)
+print("prefer "+ACTIONS[max_index])
+print("Exploit Rock Strategy: ", rock_exploit)
+# holders = avgStrategyNoHuman(100000,[.6,.2,.2])
+# print("Opponents equilibrium strategy: ", holders[0])
+# print("Players equilibrium strategy: ", holders[1])
